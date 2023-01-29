@@ -2,44 +2,106 @@
 - name: Bootstrap Main Node
   hosts: main
   become: yes
- 
-  tasks:
-
-  - name: Update APT package manager repositories cache
-    ansible.builtin.apt:
-      update_cache: yes
+  vars:
+    listen_address: 0.0.0.0
+    listen_port: 9090
   
-  - name: Download Jenkins apt key
+  tasks:
+  - name: download apt key
     ansible.builtin.apt_key:
-      url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+      url: "https://packages.grafana.com/gpg.key"
       state: present
 
-  - name: Add Jenkins repo to sources list
+  - name: Add Grafana repo to sources.list
     ansible.builtin.apt_repository:
-      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      repo: "deb https://packages.grafana.com/oss/deb stable main"
+      filename: grafana
       state: present
-      filename: jenkins
-
-  - name: Install Java and Jenkins using Ansible
+  
+  - name: Update apt cache and install Grafana
     ansible.builtin.apt:
-        name: "{{ packages }}"
-        state: present
-    vars:
-      packages:
-        - openjdk-11-jdk
-        - jenkins
-
-  - name: Start and Enable Jenkins
+      name: grafana
+      state: latest
+      update_cache: yes
+      
+  - name: Ensure Grafana is started and enabled
     ansible.builtin.systemd:
-      name: jenkins
+      name: grafana-server
       enabled: yes
       state: started
 
-  - name: "Read a file content"
-    shell: |
-      cat /var/lib/jenkins/secrets/initialAdminPassword
-    register: file_content
+  ## Prometheus Steps
 
-  - name: "Print the file contents to a console"
-    debug:
-      msg: "{{ file_content.stdout }}"
+  - name: Download Prometheus
+    ansible.builtin.get_url: 
+      url: https://github.com/prometheus/prometheus/releases/download/v2.30.3/prometheus-2.30.3.linux-amd64.tar.gz
+      dest: /home/ubuntu/
+
+  - name: Extract Prom Resources
+    ansible.builtin.unarchive:
+      src: /home/ubuntu/prometheus-2.30.3.linux-amd64.tar.gz
+      dest: /home/ubuntu
+      remote_src: yes
+
+  - name: Create Prom Group
+    ansible.builtin.group:
+      name: prometheus
+      state: present
+
+  - name: Create Prom User
+    ansible.builtin.user:
+      name: prometheus
+      group: prometheus
+      shell: /sbin/nologin
+      
+  - name: Create Prom Directories, using loops
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: prometheus
+      group: prometheus
+      mode: '0755'  # - name: Setting Dir Permissions
+    loop:
+      - /etc/prometheus
+      - /etc/prometheus/rules
+      - /etc/prometheus/rules.d
+      - /etc/prometheus/files_sd
+      - /var/lib/prometheus
+
+  - name: Copy Files to /usr/local/bin
+    ansible.builtin.copy:
+      src: "{{ item }}"
+      dest: /usr/local/bin
+      remote_src: yes
+      owner: prometheus
+      group: prometheus
+      mode: '0755'
+    loop:
+      - /home/ubuntu/prometheus-2.30.3.linux-amd64/prometheus
+      - /home/ubuntu/prometheus-2.30.3.linux-amd64/promtool
+
+  - name: Copy Files to /usr/local/bin
+    ansible.builtin.copy:
+      src: "{{ item }}"
+      dest: /etc/prometheus
+      remote_src: yes
+    loop:
+      - /home/ubuntu/prometheus-2.30.3.linux-amd64/consoles
+      - /home/ubuntu/prometheus-2.30.3.linux-amd64/console_libraries
+
+  - name: Create Pron Config file
+    ansible.builtin.template:
+      src: prometheus.yml.j2
+      dest: /etc/prometheus/prometheus.yml
+  
+  - name: Create Systemd File
+    ansible.builtin.template:
+      src: prometheus.service.j2
+      dest: /etc/systemd/system/prometheus.service
+
+  - name: Ensure Prometheus is Started
+    ansible.builtin.systemd:
+      state: started
+      enabled: yes
+      name: prometheus
