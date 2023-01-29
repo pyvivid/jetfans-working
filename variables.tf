@@ -12,12 +12,12 @@ variable "access_ip" {
 
 variable "main_instance_type" {
   type    = string
-  default = "t2.medium"
+  default = "t2.micro"
 }
 
 variable "main_vol_size" {
   type    = number
-  default = 30
+  default = 8
 }
 
 variable "main_instance_count" {
