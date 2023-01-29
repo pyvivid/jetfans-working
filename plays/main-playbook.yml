@@ -1,0 +1,45 @@
+---
+- name: Bootstrap Main Node
+  hosts: main
+  become: yes
+ 
+  tasks:
+
+  - name: Update APT package manager repositories cache
+    ansible.builtin.apt:
+      update_cache: yes
+  
+  - name: Download Jenkins apt key
+    ansible.builtin.apt_key:
+      url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+      state: present
+
+  - name: Add Jenkins repo to sources list
+    ansible.builtin.apt_repository:
+      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      state: present
+      filename: jenkins
+
+  - name: Install Java and Jenkins using Ansible
+    ansible.builtin.apt:
+        name: "{{ packages }}"
+        state: present
+    vars:
+      packages:
+        - openjdk-11-jdk
+        - jenkins
+
+  - name: Start and Enable Jenkins
+    ansible.builtin.systemd:
+      name: jenkins
+      enabled: yes
+      state: started
+
+  - name: "Read a file content"
+    shell: |
+      cat /var/lib/jenkins/secrets/initialAdminPassword
+    register: file_content
+
+  - name: "Print the file contents to a console"
+    debug:
+      msg: "{{ file_content.stdout }}"

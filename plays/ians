@@ -1,0 +1,15 @@
+○ grafana-server.service - Grafana instance
+     Loaded: loaded (/lib/systemd/system/grafana-server.service; disabled; vendor preset: enabled)
+     Active: inactive (dead)
+       Docs: http://docs.grafana.org
+
+Jan 27 17:25:08 taj-02 grafana-server[9298]: logger=context userId=0 orgId=0 uname= t=2023-01-27T17:25:08.778499575Z level=info msg="Request Completed" method=GET path=/ status=302 remote_addr=116.73.172.212 time_ms=0 duration=821.685µs size=29 referer= handler=/
+Jan 27 17:25:19 taj-02 grafana-server[9298]: logger=http.server t=2023-01-27T17:25:19.160636387Z level=info msg="Successful Login" User=admin@localhost
+Jan 27 17:25:33 taj-02 grafana-server[9298]: logger=context userId=1 orgId=1 uname=admin t=2023-01-27T17:25:33.406487761Z level=info msg="Request Completed" method=GET path=/api/live/ws status=-1 remote_addr=116.73.172.212 time_ms=1 duration=1.537406ms size=0 referer= handler=/api/live/ws
+Jan 27 17:27:46 taj-02 systemd[1]: Stopping Grafana instance...
+Jan 27 17:27:46 taj-02 grafana-server[9298]: logger=server t=2023-01-27T17:27:46.792383505Z level=info msg="Shutdown started" reason="System signal: terminated"
+Jan 27 17:27:46 taj-02 grafana-server[9298]: logger=tracing t=2023-01-27T17:27:46.792956368Z level=info msg="Closing tracing"
+Jan 27 17:27:46 taj-02 grafana-server[9298]: logger=ticker t=2023-01-27T17:27:46.793864458Z level=info msg=stopped last_tick=2023-01-27T17:27:40Z
+Jan 27 17:27:46 taj-02 systemd[1]: grafana-server.service: Deactivated successfully.
+Jan 27 17:27:46 taj-02 systemd[1]: Stopped Grafana instance.
+Jan 27 17:27:46 taj-02 systemd[1]: grafana-server.service: Consumed 4.370s CPU time.
