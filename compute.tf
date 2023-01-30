@@ -41,12 +41,12 @@ resource "aws_instance" "mtc_main" {
   }
 }
 
-resource "null_resource" "jaje_install" {
+/* resource "null_resource" "jaje_install" {
     depends_on = [aws_instance.mtc_main]
     provisioner "local-exec"{
       command = "ansible-playbook -i aws_hosts --key-file ~/.ssh/mtc_key plays/main-playbook.yml"
     }
-}
+} */
 
 /* resource "null_resource" "grafana_update" {
   count = var.main_instance_count
