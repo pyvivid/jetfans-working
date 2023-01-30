@@ -33,7 +33,7 @@ resource "aws_instance" "mtc_main" {
   }
   provisioner "local-exec" {
     # make sure the file is created, to ensure the information is captured.
-    command = "echo '\n${self.public_ip}' >> aws_hosts && aws ec2 wait instance-status-ok --instance-ids ${self.id} --region us-west-2"
+    command = "echo '\n${self.public_ip}' >> aws_hosts" ## && aws ec2 wait instance-status-ok --instance-ids ${self.id} --region us-west-2
   }
   provisioner "local-exec" {
     when    = destroy
