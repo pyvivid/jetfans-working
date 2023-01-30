@@ -10,6 +10,5 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = "us-west-2"
-  aws_access_key_id = AKIA35XN7SLM5D45URFP
-aws_secret_access_key = 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
+  shared_credentials_file = "~/.aws/credentials"
 }
