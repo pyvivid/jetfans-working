@@ -18,7 +18,7 @@ pipeline{
                 sh 'terraform plan -no-color'
             }
         }
-        // Validation steps-new
+        // Validation steps
         stage('Validate Apply'){
             input {
                 message "Do you want to apply the plan?"
