@@ -23,6 +23,9 @@ pipeline{
                 message "Do you want to apply the plan? "
                 ok "Apply this Plan. "
             }
+            steps{
+                echo "Apply Accepted."
+            }
         }
         stage('Apply'){ 
             steps {
