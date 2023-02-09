@@ -8,8 +8,10 @@ terraform {
 }
 
 # Configure the AWS Provider
+# Holding access and secret keys explicitly is not the right method.
+# Go to variables method later after you are successful tieht this approach
 provider "aws" {
-  access_key = "AKIA35XN7SLM5D45URFP"
-  secret_key = "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"
+  access_key = "Enter Access Key Here"
+  secret_key = "Enter Secret Key here"
   region = "us-west-2"
 }
